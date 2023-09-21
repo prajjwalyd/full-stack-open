@@ -1,0 +1,21 @@
+```mermaid
+
+sequenceDiagram
+    participant Browser
+    participant Server
+    
+    Browser->>Server: Request for SPA Page
+    Server->>Browser: HTML Response
+    
+    Browser->>Server: Request for main.css
+    Server->>Browser: CSS Response
+    
+    Browser->>Server: Request for spa.js
+    Server->>Browser: JavaScript Response
+    
+    Note right of Browser: JavaScript fetches data.json
+    
+    Browser->>Server: Request for data.json
+    Server->>Browser: JSON Response
+    
+    Note right of Browser: Callback function renders notes
