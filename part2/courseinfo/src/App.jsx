@@ -52,7 +52,7 @@ const App = () => {
 
   return (
     <div>
-      <Header /> {Header}
+      <Header /> 
       <Courses courses={courses} />
     </div>
   );
