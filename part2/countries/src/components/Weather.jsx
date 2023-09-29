@@ -7,8 +7,7 @@ import axios from 'axios'
 // state is not always updated instantly,
 export const GetWeather = ({ city }) => {
     const capitalCity = city[0]
-    //const apiKey = import.meta.env.VITE_KEY;
-    const apiKey = '136e09772b3ab34b4664bb9349df04ad'
+    const apiKey = import.meta.env.VITE_KEY;
     const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + capitalCity + '&units=metric&APPID=' + apiKey + ''
     const [weather, setWeather] = useState([])
 
