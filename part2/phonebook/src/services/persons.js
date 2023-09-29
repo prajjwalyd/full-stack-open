@@ -1,26 +1,30 @@
 import axios from 'axios'
 const baseUrl = '/api/persons'
 
+// using axios to handle persons list operations
+// using baseUrl for get, post, put and delete
+
 const getAll = () => {
-    const request = axios.get(baseUrl)
-    return request.then(response => response.data)
+  return axios.get(baseUrl)
 }
 
 const create = newObject => {
-    const request = axios.post(baseUrl, newObject)
-    return request.then(response => response.data)
+  return axios.post(baseUrl, newObject)
 }
 
-const updatePerson = (id, newObject) => {
-    const request = axios.put(`${baseUrl}/${id}`, newObject)
-    return request.then(response => response.data)
-  }  
-
-const getDeletePerson = id => {
-    const request = axios.delete(`${baseUrl}/${id}`)
-    return request.then(response => response.data)
+const update = (id, newObject) => {
+  return axios.put(`${baseUrl}/${id}`, newObject)
 }
 
-const personServices = { getAll, create, updatePerson, getDeletePerson }
+const deletePerson = (id) => {
+  return axios.delete(`${baseUrl}/${id}`)
+}
 
-export default  personServices 
+const personService = {
+  getAll,
+  create,
+  update,
+  deletePerson
+}
+
+export default personService
