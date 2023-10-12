@@ -12,6 +12,10 @@ import loginService from './services/login'
 
 const App = () => {
 
+  const buttonStyle = {
+    cursor: 'pointer'
+  }
+
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -107,11 +111,30 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        showSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+        showSuccessMessage(`New blog "${returnedBlog.title}" by ${returnedBlog.author} added`)
       })
       .catch(error => {
         showErrorMessage('Sorry, something went wrong: ' + error.response.data.error)
       })
+  }
+
+  const removeBlog = (blogObject) => {
+    const blogId = blogObject.id
+    const blogTitle = blogObject.title
+
+    if (window.confirm(`Remove ${blogTitle}?`)) {
+
+      blogService
+        .remove(blogId)
+        .then(() => {
+          showSuccessMessage(`You removed blog "${blogTitle}"`)
+          setBlogs(blogs.filter(n => n.id !== blogId))
+        })
+        .catch(error => {
+          showErrorMessage('You cannot remove blogs added by another user: ' + error.response.data.error)
+        })
+
+    }
   }
 
 
@@ -137,20 +160,35 @@ const App = () => {
     <div>
       {user.name} logged in {' '}
       <Button
+        style={buttonStyle}
         onClick={handleLogout}
         text='LOGOUT' />
     </div>
   )
 
 
-  const showBlogs = () => (
-    <div>
-      <h3> All blogs</h3>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
+  const showBlogs = () => {
+    blogs.sort((a, b) => b.likes - a.likes)
+
+    return (
+      <div>
+        <h3> Click blog name for more details</h3>
+        {blogs
+          .map(blog =>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              showSuccessMessage={showSuccessMessage}
+              showErrorMessage={showErrorMessage}
+              user={user}
+              removeBlog={removeBlog}
+            />)
+        }
+
+      </div>
+    )
+  }
+
 
 
   return (
