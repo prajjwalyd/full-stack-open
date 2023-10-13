@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Button, Input } from './FormHelper'
-
-export const LoginForm = ({ loginHelper }) => {
+export const LoginForm = ({ loginUser }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -14,10 +13,10 @@ export const LoginForm = ({ loginHelper }) => {
     setPassword(event.target.value)
   }
 
-  const loginUser = (event) => {
+  const signIn = (event) => {
     event.preventDefault()
 
-    loginHelper({
+    loginUser({
       username: username,
       password: password
     })
@@ -34,27 +33,32 @@ export const LoginForm = ({ loginHelper }) => {
     <div>
       <h2>Login</h2>
 
-      <form onSubmit={loginUser}>
+      <form onSubmit={signIn}>
 
         <Input
+          id='login-username'
           text='username: '
           type='text'
+          autoComplete='off'
           value={username}
-          name='Username'
+          name='username'
           onChange={handleUsernameChange} />
 
         <Input
+          id='login-password'
           text='password: '
           type='password'
+          autoComplete='off'
           value={password}
-          name='Password'
+          name='password'
           onChange={handlePasswordChange}
         />
 
         <Button
+          id='login-button'
           style={buttonStyle}
           type='submit'
-          text='login'
+          text='LOGIN'
         />
 
       </form>

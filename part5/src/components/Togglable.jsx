@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import { useState, useImperativeHandle, forwardRef } from 'react'
 import { Button } from './FormHelper'
 
@@ -22,9 +23,6 @@ export const Togglable = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({ toggleVisibility }))
 
-  const buttonStyle = {
-    cursor: 'pointer'
-  }
 
   return (
     <div>
@@ -32,19 +30,21 @@ export const Togglable = forwardRef((props, ref) => {
       <div style={hideWhenVisible}>
         <p>
           <Button
-            style={buttonStyle}
+            style={{ cursor: 'pointer' }}
+            type='button'
             onClick={toggleVisibility}
             text={props.buttonLabel}
           />
         </p>
       </div>
 
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='togglableContent'>
 
         {props.children}
         <p>
           <Button
-            style={buttonStyle}
+            style={{ cursor: 'pointer' }}
+            type='button'
             onClick={toggleVisibility}
             text='close'
           />
@@ -54,3 +54,5 @@ export const Togglable = forwardRef((props, ref) => {
     </div>
   )
 })
+
+Togglable.displayName = 'Togglable'

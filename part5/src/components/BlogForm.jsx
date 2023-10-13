@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Button, Input } from './FormHelper'
-
-export const BlogForm = ({ createBlog }) => {
+export const BlogForm = ({ addBlog }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -25,10 +24,11 @@ export const BlogForm = ({ createBlog }) => {
     setUrl('')
   }
 
-  const addBlog = (event) => {
+  // addBlog is defined in App
+  const saveBlog = (event) => {
     event.preventDefault()
 
-    createBlog({
+    addBlog({
       title: title,
       author: author,
       url: url
@@ -47,9 +47,10 @@ export const BlogForm = ({ createBlog }) => {
 
       <h3>Please fill all fields</h3>
 
-      <form onSubmit={addBlog}>
+      <form onSubmit={saveBlog}>
 
         <Input
+          id='blogform-title'
           text='title: '
           type='text'
           value={title}
@@ -58,6 +59,7 @@ export const BlogForm = ({ createBlog }) => {
         />
 
         <Input
+          id='blogform-author'
           text='author: '
           type='text'
           value={author}
@@ -66,6 +68,7 @@ export const BlogForm = ({ createBlog }) => {
         />
 
         <Input
+          id='blogform-url'
           text='url: '
           type='text'
           value={url}
@@ -74,6 +77,7 @@ export const BlogForm = ({ createBlog }) => {
         />
 
         <Button
+          id='blogform-button'
           style={buttonStyle}
           type='submit'
           text='SAVE BLOG'
@@ -84,3 +88,4 @@ export const BlogForm = ({ createBlog }) => {
     </div>
   )
 }
+

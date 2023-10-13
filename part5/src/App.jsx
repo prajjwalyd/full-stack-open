@@ -1,26 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
-
 import { Blog } from './components/Blog'
 import { LoginForm } from './components/LoginForm'
 import { BlogForm } from './components/BlogForm'
 import { Togglable } from './components/Togglable'
 import { Button } from './components/FormHelper'
 import { ErrorNotification, SuccessNotification } from './components/Notification'
-
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-
-  const buttonStyle = {
-    cursor: 'pointer'
-  }
-
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-
 
   useEffect(() => {
     blogService
@@ -29,7 +21,6 @@ const App = () => {
         setBlogs(initialBlogs)
       )
   }, [])
-
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -41,7 +32,6 @@ const App = () => {
     }
   }, [])
 
-
   const showSuccessMessage = (message) => {
     setSuccessMessage(message)
     setTimeout(() => {
@@ -49,14 +39,12 @@ const App = () => {
     }, 3000)
   }
 
-
   const showErrorMessage = (message) => {
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage(null)
     }, 3000)
   }
-
 
   const handleLogout = async (event) => {
     event.preventDefault()
@@ -69,9 +57,7 @@ const App = () => {
     } catch (exception) {
       showErrorMessage('something went wrong, try to logout again')
     }
-
   }
-
 
   const loginUser = (userObject) => {
     loginService
@@ -89,23 +75,19 @@ const App = () => {
       })
   }
 
-
   const loginView = () => {
     return (
       <div>
         <Togglable buttonLabel='PLEASE LOG IN'>
-          <LoginForm loginHelper={loginUser} />
+          <LoginForm loginUser={loginUser} />
         </Togglable>
       </div>
     )
   }
 
-
   const blogFormRef = useRef()
-
-
   const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
+    blogFormRef.current.togglableHandle()
 
     blogService
       .create(blogObject)
@@ -118,54 +100,36 @@ const App = () => {
       })
   }
 
-  const removeBlog = (blogObject) => {
-    const blogId = blogObject.id
-    const blogTitle = blogObject.title
-
-    if (window.confirm(`Remove ${blogTitle}?`)) {
-
-      blogService
-        .remove(blogId)
-        .then(() => {
-          showSuccessMessage(`You removed blog "${blogTitle}"`)
-          setBlogs(blogs.filter(n => n.id !== blogId))
-        })
-        .catch(error => {
-          showErrorMessage('You cannot remove blogs added by another user: ' + error.response.data.error)
-        })
-
-    }
-  }
-
-
   const blogView = () => {
     return (
       <div>
         {showLoggedUser()}
 
         <Togglable buttonLabel='ADD A NEW BLOG' ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} />
+          <BlogForm addBlog={addBlog} />
         </Togglable>
 
         <Togglable buttonLabel='SHOW ALL BLOGS'>
-          {showBlogs()}
+          {blogs.length === 0 ?
+            'Sorry, no blogs added at the moment' :
+            showBlogs()
+          }
         </Togglable>
-
       </div >
     )
   }
-
 
   const showLoggedUser = () => (
     <div>
       {user.name} logged in {' '}
       <Button
-        style={buttonStyle}
+        style={{ cursor: 'pointer' }}
+        type='button'
         onClick={handleLogout}
-        text='LOGOUT' />
+        text='LOGOUT'
+      />
     </div>
   )
-
 
   const showBlogs = () => {
     blogs.sort((a, b) => b.likes - a.likes)
@@ -178,32 +142,26 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
+              blogs={blogs}
+              setBlogs={setBlogs}
+              user={user}
               showSuccessMessage={showSuccessMessage}
               showErrorMessage={showErrorMessage}
-              user={user}
-              removeBlog={removeBlog}
             />)
         }
-
       </div>
     )
   }
 
-
-
   return (
     <div>
-
       <h2>BLOGS</h2>
-
       <ErrorNotification message={errorMessage} />
       <SuccessNotification message={successMessage} />
-
       {user === null ?
         loginView() :
         blogView()
       }
-
     </div>
   )
 }
