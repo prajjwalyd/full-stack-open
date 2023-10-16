@@ -1,4 +1,5 @@
 /* eslint-disable no-case-declarations */
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -27,6 +28,14 @@ export const addVote = (id) => {
   }
 }
 
+export const addAnecdote = (content) => {
+  return {
+    type: 'ADD_ANECDOTE',
+    data: { content }
+  }
+}
+
+
 
 const anecdoteReducer = (state = initialState, action) => {
   console.log('state now: ', state)
@@ -44,7 +53,18 @@ const anecdoteReducer = (state = initialState, action) => {
           changedAnecdote
       )
 
-      return updatedAnecdotes
+      return updatedAnecdotes.sort((a, b) => b.votes - a.votes)
+
+    case 'ADD_ANECDOTE':
+      const anecdoteContent = action.data.content
+
+      const newAnecdote = {
+        content: anecdoteContent,
+        id: getId(),
+        votes: 0
+      }
+
+      return [...state, newAnecdote]
 
     default:
       return state
