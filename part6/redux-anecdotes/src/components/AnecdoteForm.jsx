@@ -1,27 +1,26 @@
-import { useDispatch } from 'react-redux'
+/* eslint-disable react/prop-types */
+import { connect } from 'react-redux'
 import { addAnecdote } from '../reducers/anecdoteReducer'
-import { createNotification, deleteNotification } from '../reducers/notificationReducer'
-import anecdoteService from '../services/anecdoteService'
+import { setNotification } from '../reducers/notificationReducer'
 
-const AnecdoteForm = () => {
 
-  const dispatch = useDispatch()
+const AnecdoteForm = (props) => {
 
-  const createNewAnecdote = async (event) => {
+  const createNewAnecdoteAndNotify = async (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
-    const newAnecdote = await anecdoteService.createNew(content)
-    dispatch(addAnecdote(newAnecdote))
+    createNewAnecdote(content)
     notify(content)
     event.target.anecdote.value = ''
   }
 
+  const createNewAnecdote = (content) => {
+    props.addAnecdote(content)
+  }
+
   const notify = (content) => {
     const message = 'New anecdote created: '
-    dispatch(createNotification({ message, content }))
-    setTimeout(() => {
-      dispatch(deleteNotification())
-    }, 5000)
+    props.setNotification(message, content, 3)
   }
 
 
@@ -29,7 +28,7 @@ const AnecdoteForm = () => {
     <div>
       <h2>create new</h2>
 
-      <form onSubmit={createNewAnecdote}>
+      <form onSubmit={createNewAnecdoteAndNotify}>
         <input name="anecdote" />
         <button type="submit">
           create
@@ -40,4 +39,9 @@ const AnecdoteForm = () => {
   )
 }
 
-export default AnecdoteForm
+const mapDispatchToProps = {
+  addAnecdote,
+  setNotification
+}
+
+export default connect(null, mapDispatchToProps)(AnecdoteForm)

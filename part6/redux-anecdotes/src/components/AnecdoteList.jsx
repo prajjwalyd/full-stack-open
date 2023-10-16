@@ -1,37 +1,33 @@
-import { useDispatch, useSelector } from 'react-redux'
+/* eslint-disable react/prop-types */
+import { connect } from 'react-redux'
 import { addVote } from '../reducers/anecdoteReducer'
-import { createNotification, deleteNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 
-const Anecdotes = () => {
-  const dispatch = useDispatch()
-
-  const anecdotesList = useSelector(({ anecdotes, filter }) => {
-    return anecdotes.filter(anecdote =>
-      (anecdote.content.toLowerCase().includes(filter.toLowerCase())))
-  })
-
-  const vote = (id, content) => {
-    dispatch(addVote(id))
-    notify(content)
-  }
-
-  const notify = (content) => {
-    const message = 'You voted for: '
-    dispatch(createNotification({ message, content }))
-    setTimeout(() => {
-      dispatch(deleteNotification())
-    }, 5000)
-  }
+const Anecdotes = (props) => {
 
   const style = {
     marginBottom: 10
   }
 
+  const voteAndNotify = (anecdote) => {
+    vote(anecdote)
+    notify(anecdote.content)
+  }
+
+  const vote = (anecdote) => {
+    props.addVote(anecdote)
+  }
+
+  const notify = (content) => {
+    const message = 'You voted for: '
+    props.setNotification(message, content, 3)
+  }
+
   return (
     <div>
 
-      {anecdotesList.map(anecdote =>
+      {props.anecdotes.map(anecdote =>
         <div key={anecdote.id} style={style}>
 
           <div>
@@ -40,7 +36,7 @@ const Anecdotes = () => {
 
           <div>
             has {anecdote.votes} votes {' '}
-            <button onClick={() => vote(anecdote.id, anecdote.content)}>
+            <button onClick={() => voteAndNotify(anecdote)}>
               vote
             </button>
           </div>
@@ -52,4 +48,21 @@ const Anecdotes = () => {
   )
 }
 
-export default Anecdotes
+const mapStateToProps = (state) => {
+  return {
+    anecdotes: state.anecdotes
+      .filter(anecdote =>
+        (anecdote.content.toLowerCase().includes(state.filter.toLowerCase()))
+      )
+      .sort((a, b) =>
+        b.votes - a.votes || a.content.localeCompare(b.content)
+      )
+  }
+}
+
+const mapDispatchToProps = {
+  addVote,
+  setNotification
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Anecdotes)

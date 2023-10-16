@@ -1,11 +1,11 @@
+/* eslint-disable react/prop-types */
 import { changeFilter } from '../reducers/filterReducer'
-import { useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 
-const AnecdoteFilter = () => {
-  const dispatch = useDispatch()
+const AnecdoteFilter = (props) => {
 
   const handleFilterChange = (event) => {
-    dispatch(changeFilter(event.target.value))
+    props.changeFilter(event.target.value)
   }
 
   const style = {
@@ -24,4 +24,8 @@ const AnecdoteFilter = () => {
   )
 }
 
-export default AnecdoteFilter
+const mapDispatchToProps = {
+  changeFilter
+}
+
+export default connect(null, mapDispatchToProps)(AnecdoteFilter)
