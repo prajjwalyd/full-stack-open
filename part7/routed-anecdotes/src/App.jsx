@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 import { useState } from 'react'
 import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom"
+import { useField } from './hooks'
+
 
 const Menu = () => {
 
@@ -27,21 +30,24 @@ const Menu = () => {
 }
 
 
-const AnecdoteList = ({ anecdotes }) => (
-  <div>
-    <h2>Anecdotes</h2>
+const AnecdoteList = ({ anecdotes }) => {
+  console.log(anecdotes)
+  return (
+    <div>
+      <h2>Anecdotes</h2>
 
-    <ul>
-      {anecdotes.map(anecdote =>
-        <li key={anecdote.id} >
-          <Link to={`/anecdotes/${anecdote.id}`}>
-            {anecdote.content}
-          </Link>
-        </li>)}
-    </ul>
+      <ul>
+        {anecdotes.map(anecdote =>
+          <li key={anecdote.id} >
+            <Link to={`/anecdotes/${anecdote.id}`}>
+              {anecdote.content}
+            </Link>
+          </li>)}
+      </ul>
 
-  </div >
-)
+    </div >
+  )
+}
 
 
 const Anecdote = ({ anecdote }) => (
@@ -49,7 +55,6 @@ const Anecdote = ({ anecdote }) => (
     <h3> <i> {anecdote.content} </i> by {anecdote.author} </h3>
     <p> has {anecdote.votes} votes </p>
     <p> for more info see <a href={anecdote.info} > {anecdote.info} </a> </p>
-
   </div >
 )
 
@@ -80,49 +85,63 @@ const Footer = () => (
 
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
-
-
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
 
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    props.addNew(
-      {
-        content,
-        author,
-        info,
-        votes: 0
-      }
-    )
+
+    const newAnecdote = {
+      content: content.value,
+      author: author.value,
+      info: info.value,
+      votes: 0
+    }
+
+    props.addNew(newAnecdote)
   }
+
+  const resetFields = (event) => {
+    event.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
+  const { reset: resetContent, ...inputcontent } = content
+  const { reset: resetInput, ...inputauthor } = author
+  const { reset: resetInfo, ...inputinfo } = info
+
 
   return (
     <div>
       <h2>Create a new anecdote</h2>
 
-      <form onSubmit={handleSubmit}  >
-
+      <form>
 
         <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          content:
+          <input {...inputcontent} />
         </div>
 
         <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          author:
+          <input {...inputauthor} />
         </div>
 
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
+          <input {...inputinfo} />
         </div>
 
-        <button>
+        <button onClick={handleSubmit}>
           create
+        </button>
+
+        <button onClick={resetFields}>
+          reset
         </button>
 
       </form>
@@ -153,8 +172,7 @@ const App = () => {
 
   const [notification, setNotification] = useState('')
 
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
 
   const addNew = (anecdote) => {
@@ -169,6 +187,7 @@ const App = () => {
     }
   }
 
+
   const notify = (message) => {
     setNotification(message)
 
@@ -177,7 +196,6 @@ const App = () => {
     }, 5000);
   }
 
-  
   const matchAnecdoteId = useMatch('/anecdotes/:id')
   const anecdote = matchAnecdoteId
     ? anecdotes.find(anecdote => anecdote.id === Number(matchAnecdoteId.params.id))
